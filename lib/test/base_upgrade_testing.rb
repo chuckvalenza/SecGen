@@ -20,7 +20,7 @@ require_relative '../output/xml_scenario_generator.rb'
 require_relative '../objects/system'
 require_relative '../objects/module'
 
-@path_to_ruby = '/home/thomashaw/.rvm/rubies/ruby-2.3.4/bin/ruby'
+@path_to_ruby = '/usr/bin/ruby2.3'
 
 def select_base
   bases = ModuleReader.read_bases
@@ -75,9 +75,9 @@ def generate_scenarios(selected_base)
 
   output_scenario_paths = []
 
-  available_software_modules.each do |mod|
+  available_software_modules.each_with_index do |mod, i|
     ## Create a system_name based on the selected module and the base name
-    system_name = "#{selected_base.module_path_end}_#{mod.module_path_end}"
+    system_name = mod.module_path_end
 
     # Clean up name
     system_name = system_name.gsub(/ /, "_")
@@ -94,13 +94,13 @@ def generate_scenarios(selected_base)
     xml_generator = XmlScenarioGenerator.new([system], system_name, Time.new.to_s)
     xml_content = xml_generator.output
 
-    output_filename = "tmp/#{system_name}.xml"
+    output_filename = "#{tmp_dir}/#{i}.xml"
     Print.std "Creating scenario definition file: #{output_filename}"
     begin
       File.open(output_filename, 'w+') do |file|
         file.write(xml_content)
       end
-      output_scenario_paths << "#{tmp_dir}/#{output_filename}"
+      output_scenario_paths << output_filename
     rescue StandardError => e
       Print.err "Error writing file: #{e.message}"
       abort
@@ -112,7 +112,7 @@ end
 def add_to_secgen_batch(scenario_paths)
   Print.info "Adding #{scenario_paths.size} jobs to batch queue"
    scenario_paths.each do |scenario_path|
-      puts `#{@path_to_ruby} #{ROOT_DIR}/lib/batch/batch_secgen.rb add --instances 1 --- -s #{scenario_path} --read-options secgen.conf r`
+      puts `#{@path_to_ruby} #{ROOT_DIR}/lib/batch/batch_secgen.rb add --instances test --- -s #{scenario_path} --read-options secgen.conf r`
    end
 end
 
