@@ -20,7 +20,8 @@ require_relative '../output/xml_scenario_generator.rb'
 require_relative '../objects/system'
 require_relative '../objects/module'
 
-@path_to_ruby = '/usr/bin/ruby2.3'
+@path_to_ruby = '/usr/bin/ruby'
+@network_module = ''
 
 def select_base
   bases = ModuleReader.read_bases
@@ -39,9 +40,11 @@ def select_base
 end
 
 def get_network_module
-  network_module = Module.new('network')
-  network_module.attributes['type'] = ['private_network']
-  network_module
+  if @network_module == ''
+    @network_module = Module.new('network')
+    @network_module.attributes['type'] = ['private_network']
+  end
+  @network_module
 end
 
 def generate_scenarios(selected_base)
@@ -112,7 +115,7 @@ end
 def add_to_secgen_batch(scenario_paths)
   Print.info "Adding #{scenario_paths.size} jobs to batch queue"
    scenario_paths.each do |scenario_path|
-      puts `#{@path_to_ruby} #{ROOT_DIR}/lib/batch/batch_secgen.rb add --instances test --- -s #{scenario_path} --read-options secgen.conf r`
+      puts `#{@path_to_ruby} #{ROOT_DIR}/lib/batch/batch_secgen.rb add --instances test --- -s #{scenario_path} --read-options #{ROOT_DIR}/secgen.conf r`
    end
 end
 
