@@ -2,6 +2,10 @@ class dc16_feedme::install {
   $secgen_params = secgen_functions::get_parameters($::base64_inputs_file)
   $account = parsejson($secgen_params['account'][0])
 
+  package { 'build-essential':
+    ensure => installed,
+  }
+
   ::secgen_functions::install_setuid_root_binary { 'defcon16_amadhj':
     source_module_name     => $module_name,
     challenge_name         => $secgen_params['challenge_name'][0],
