@@ -113,10 +113,14 @@ def generate_scenarios(selected_base)
 end
 
 def add_to_secgen_batch(scenario_paths)
-  Print.info "Adding #{scenario_paths.size} jobs to batch queue"
-   scenario_paths.each do |scenario_path|
+  Print.info 'Do you want to add the generated test scenarios to the batch? [Y/n]'
+  input = STDIN.gets.chomp
+  unless input == 'N' or input == 'n'
+    Print.info "Adding #{scenario_paths.size} jobs to batch queue"
+    scenario_paths.each do |scenario_path|
       puts `#{@path_to_ruby} #{ROOT_DIR}/lib/batch/batch_secgen.rb add --instances test --- -s #{scenario_path} --read-options #{ROOT_DIR}/secgen.conf r`
-   end
+    end
+  end
 end
 
 Print.info 'Script for generating base module upgrade test scenarios'
