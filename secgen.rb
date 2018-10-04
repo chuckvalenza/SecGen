@@ -246,12 +246,12 @@ def run(scenario, project_dir, options)
 end
 
 def default_project_dir
-  "#{PROJECTS_DIR}/SecGen#{Time.new.strftime("%Y%m%d_%H%M")}"
+  "#{PROJECTS_DIR}/SecGen#{Time.new.strftime("%Y%m%d_%H%M%S")}"
 end
 
 
 def project_dir(prefix)
-  "#{PROJECTS_DIR}/#{prefix}_SecGen#{Time.new.strftime("%Y%m%d_%H%M")}"
+  "#{PROJECTS_DIR}/#{prefix}_SecGen#{Time.new.strftime("%Y%m%d_%H%M%S")}"
 end
 
 def list_scenarios
