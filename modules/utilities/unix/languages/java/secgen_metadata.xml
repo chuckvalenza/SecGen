@@ -21,6 +21,10 @@
   <conflict>
     <software_name>java</software_name>
   </conflict>
+  
+  <conflict>
+    <name>Stretch</name>
+  </conflict>
 
   <requires>
     <type>update</type>

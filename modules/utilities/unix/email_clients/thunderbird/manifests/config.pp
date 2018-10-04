@@ -10,7 +10,7 @@ class thunderbird::config {
     $username = $account['username']
 
     # add user profile
-    file { ["/home/$username/.thunderbird/",
+    file { ["/home/$username/", "/home/$username/.thunderbird/",
       "/home/$username/.thunderbird/user.default"]:
       ensure => directory,
       owner  => $username,

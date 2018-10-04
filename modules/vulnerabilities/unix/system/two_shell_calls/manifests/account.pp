@@ -25,17 +25,23 @@ define two_shell_calls::account($username, $password, $strings_to_leak, $leaked_
     source => 'puppet:///modules/two_shell_calls/shell.c',
   }
 
+  package { ['build-essential', 'gcc-multilib']:
+    ensure => installed,
+  }
+
   if ('none' in $strings_to_leak ){
     exec { "$username-compileandsetup1":
       cwd     => "/home/$username/",
       command => "gcc -o shell shell.c && sudo chown $username:managers shell && sudo chmod 2755 shell",
       path    => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ],
+      require => Package['build-essential', 'gcc-multilib']
     }
   } else {
     exec { "$username-compileandsetup2":
       cwd     => "/home/$username/",
       command => "gcc -o shell shell.c && sudo chown $username:managers shell && sudo chmod 4750 shell",
       path    => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ],
+      require => Package['build-essential', 'gcc-multilib']
     }
   }
 

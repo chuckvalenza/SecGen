@@ -10,7 +10,8 @@ class pidgin::config {
     $username = $account['username']
     $conf_dir = "/home/$username/.purple"
 
-    file { ["$conf_dir",
+    file { ["/home/$username/",
+            "$conf_dir",
             "$conf_dir/smileys/",
             "$conf_dir/icons/",
             "$conf_dir/certificates",

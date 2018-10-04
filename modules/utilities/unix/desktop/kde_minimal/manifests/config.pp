@@ -29,12 +29,11 @@ class kde_minimal::config {
 
     # autostart konsole
     if $autostart_konsole {
-      file { ["/home/$username/.config/", "/home/$username/.config/autostart/"]:
+      file { ["/home/$username/","/home/$username/.config/", "/home/$username/.config/autostart/"]:
         ensure => directory,
         owner  => $username,
         group  => $username,
-      }
-
+      } ~>
       file { "/home/$username/.config/autostart/org.kde.konsole.desktop":
         ensure => file,
         source => 'puppet:///modules/kde_minimal/org.kde.konsole.desktop',
@@ -49,6 +48,7 @@ class kde_minimal::config {
         source => 'puppet:///modules/kde_minimal/kscreenlockrrc',
         owner => $username,
         group => $username,
+        require => File["/home/$username/"],
       }
     }
   }
