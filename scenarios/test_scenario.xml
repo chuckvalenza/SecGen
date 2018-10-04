@@ -9,7 +9,7 @@
 		<system_name>userspice</system_name>
 		<base distro="Debian 9" type="desktop" name="KDE"/>
 
-		<vulnerability module_path=".*java_decompile"/>
+		<service module_path=".*samba"/>
 
 		<network type="private_network">
 			<input into="IP_address">

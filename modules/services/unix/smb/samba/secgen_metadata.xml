@@ -22,10 +22,6 @@
     <software_name>samba</software_name>
   </conflict>
 
-  <conflict>
-    <name>Stretch</name>
-  </conflict>
-
   <requires>
     <type>update</type>
   </requires>
