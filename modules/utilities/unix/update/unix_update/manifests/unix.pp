@@ -5,9 +5,6 @@ class unix_update::unix{
         command => "/usr/bin/apt-get update --fix-missing",
         tries => 5,
         try_sleep => 30,
-      } ~>
-      exec { 'post-update-sleep':
-        command => '/bin/sleep 10'
       }
     }
     'Ubuntu': {
@@ -15,9 +12,6 @@ class unix_update::unix{
         command => "/usr/bin/apt-get update --fix-missing",
         tries => 5,
         try_sleep => 30,
-      } ~>
-      exec { 'post-update-sleep':
-        command => '/bin/sleep 10'
       }
     }
     'RedHat': {
@@ -25,9 +19,6 @@ class unix_update::unix{
         command => "yum update",
         tries => 5,
         try_sleep => 30,
-      } ~>
-      exec { 'post-update-sleep':
-        command => '/bin/sleep 10'
       }
     }
     'CentOS': {
@@ -35,9 +26,6 @@ class unix_update::unix{
         command => "su -c 'yum update'",
         tries => 5,
         try_sleep => 30,
-      } ~>
-      exec { 'post-update-sleep':
-        command => '/bin/sleep 10'
       }
     }
     'Solaris': {
@@ -45,9 +33,6 @@ class unix_update::unix{
         command => "pkg update",
         tries => 5,
         try_sleep => 30,
-      } ~>
-      exec { 'post-update-sleep':
-        command => '/bin/sleep 10'
       }
     }
   }
