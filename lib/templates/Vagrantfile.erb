@@ -99,7 +99,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         if (@options.has_key? :ovirtuser) && (@options.has_key? :ovirtpass) -%>
         <%= system.name %>.vm.provision 'shell', inline: "echo 'datasource_list: [ None ] '> /etc/cloud/cloud.cfg.d/90_dpkg.cfg"
     <%  end -%>
-    <% # Rebuild deb ovirt templates with these services disabled. Solves apt locking issue temporarily...
 
     # SecGen datastore
     # <%= JSON.generate($datastore) %>
