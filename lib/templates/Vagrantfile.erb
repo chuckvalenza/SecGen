@@ -102,10 +102,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     <% # Rebuild deb ovirt templates with these services disabled. Solves apt locking issue temporarily...
       if @ovirt_template and ( @ovirt_template.include? 'debian_stretch_server_n' or @ovirt_template.include? 'debian_stretch_desktop_kde') -%>
         <%= system.name %>.vm.provision "shell", inline: <<-SHELL
-        systemctl disable apt-daily.service
-        systemctl disable apt-daily.timer
-        systemctl disable apt-daily-upgrade.service
-        systemctl disable apt-daily-upgrade.timer
+        systemctl stop apt-daily.service
+        systemctl kill --kill-who=all apt-daily.service
+
+        # wait until `apt-get updated` has been killed
+        while ! (systemctl list-units --all apt-daily.service | fgrep -q dead)
+          do
+          sleep 1;
+        done
         SHELL
   <%  end -%>
 
