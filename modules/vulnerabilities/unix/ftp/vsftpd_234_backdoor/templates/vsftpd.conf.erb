@@ -6,7 +6,7 @@
     if @organisation and @organisation != ''
       $ftpd_banner = "Welcome to the #{@organisation['business_name']} FTP server!"
     else
-      $ftpd_banner = $secgen_parameters['ftpd_banner'].first
+      $ftpd_banner = @secgen_parameters['ftpd_banner'].first
     end
 %>
 # Example config file /etc/vsftpd.conf
