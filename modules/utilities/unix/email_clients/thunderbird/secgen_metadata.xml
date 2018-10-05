@@ -18,10 +18,6 @@
   <read_fact>autostart</read_fact>
   <read_fact>start_page</read_fact>
 
-  <!--<default_input into="accounts">-->
-    <!--<generator type="account"/>-->
-  <!--</default_input>-->
-
   <default_input into="autostart">
     <value>true</value>
   </default_input>

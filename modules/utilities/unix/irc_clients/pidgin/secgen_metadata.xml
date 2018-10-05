@@ -19,12 +19,6 @@
     <value>127.0.0.1</value>
   </default_input>
 
-  <default_input into="accounts">
-    <value/>
-    <!--TODO add root account generator -->
-    <!--<generator type="root_account"/> -->
-  </default_input>
-
   <default_input into="autostart">
     <value>true</value>
   </default_input>
