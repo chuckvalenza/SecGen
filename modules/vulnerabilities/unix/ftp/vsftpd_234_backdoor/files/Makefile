@@ -3,7 +3,7 @@ CC 	=	gcc
 INSTALL	=	install
 IFLAGS  = -idirafter dummyinc
 #CFLAGS = -g
-CFLAGS	=	-O2 -Wall -W -Wshadow #-pedantic -Werror -Wconversion
+CFLAGS	=	-m32 -O2 -Wall -W -Wshadow #-pedantic -Werror -Wconversion
 
 LIBS	=	`./vsf_findlibs.sh` -lcrypt -lpam
 LINK	=	-Wl,-s
