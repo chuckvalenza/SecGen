@@ -4,7 +4,7 @@ class pidgin::config {
   $autostart = str2bool($secgen_params['autostart'][0])
   $ip = $secgen_params['server_ip'][0]
 
-  # Setup Pidgin for each user account
+  # Set.up Pidgin for each user account
   $accounts.each |$raw_account| {
     $account = parsejson($raw_account)
     $username = $account['username']
