@@ -25,9 +25,8 @@ define two_shell_calls::account($username, $password, $strings_to_leak, $leaked_
     source => 'puppet:///modules/two_shell_calls/shell.c',
   }
 
-  package { ['build-essential', 'gcc-multilib']:
-    ensure => installed,
-  }
+  ensure_packages('build-essential')
+  ensure_packages('gcc-multilib')
 
   if ('none' in $strings_to_leak ){
     exec { "$username-compileandsetup1":
