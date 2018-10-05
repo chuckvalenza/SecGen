@@ -4,6 +4,8 @@ class vsftpd_234_backdoor::install {
   package { ['libssl-dev' ,'libpam0g-dev']:
     ensure => installed,
   }
+  ensure_packages('build-essential')
+  ensure_packages('gcc-multilib')
 
   # Required directories
   file { ['/usr/share/empty','/var/ftp','/usr/local/man/man5/', '/usr/local/man/man8/']:
