@@ -1,9 +1,9 @@
 # Makefile for systems with GNU tools
-CC 	=	gcc
+CC 	=	gcc -m32
 INSTALL	=	install
 IFLAGS  = -idirafter dummyinc
 #CFLAGS = -g
-CFLAGS	=	-m32 -O2 -Wall -W -Wshadow #-pedantic -Werror -Wconversion
+CFLAGS	=	-O2 -Wall -W -Wshadow #-pedantic -Werror -Wconversion
 
 LIBS	=	`./vsf_findlibs.sh` -lcrypt -lpam
 LINK	=	-Wl,-s
