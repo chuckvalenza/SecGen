@@ -4,7 +4,7 @@ class vsftpd_234_backdoor::install {
   case $operatingsystemrelease {
     /^9.*/: { # do 9.x stretch stuff
       exec { 'add_32bit_libs':
-        command => '/usr/bin/dpkg --add-architecture i386'
+        command => '/usr/bin/dpkg --add-architecture i386 && apt-get update'
       }
       package { ['libssl-dev:i386','libpam0g-dev:i386']:
         ensure => installed,
