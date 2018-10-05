@@ -44,7 +44,7 @@ class kde_minimal::config {
       }
 
       if $operatingsystemrelease =~ /^9.*/ { # Disable stretch auto screen lock
-        file { "/home/$username/.config/kscreenlockrrc":
+        file { "/home/$username/.config/kscreenlockerrc":
           ensure  => file,
           source  => 'puppet:///modules/kde_minimal/kscreenlockerrc',
           owner   => $username,
