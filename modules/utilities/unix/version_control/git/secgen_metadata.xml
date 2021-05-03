@@ -13,6 +13,7 @@
 
   <!--optional details-->
   <reference>https://git-scm.com/</reference>
+  <software_name>git</software_name>
 
   <requires>
     <type>update</type>

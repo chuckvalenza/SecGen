@@ -32,6 +32,9 @@ class ProjectFilesCreator
     @options = options
     @scenario_networks = Hash.new { |h, k| h[k] = 1 }
     @option_range_map = {}
+
+    # Packer builder type
+    @builder_type = @options.has_key?(:esxi_url) ? :vmware_iso : :virtualbox_iso
   end
 
 # Generate all relevant files for the project
@@ -65,7 +68,7 @@ class ProjectFilesCreator
       Print.std "Creating Puppet modules librarian-puppet file: #{pfile}"
       template_based_file_write(PUPPET_TEMPLATE_FILE, pfile)
       Print.std 'Preparing puppet modules using librarian-puppet'
-      librarian_output = GemExec.exe('librarian-puppet', path, 'install')
+      librarian_output = GemExec.exe('librarian-puppet', path, 'install --verbose')
       if librarian_output[:status] != 0
         Print.err 'Failed to prepare puppet modules!'
         abort
@@ -73,7 +76,7 @@ class ProjectFilesCreator
       system.module_selections.each do |selected_module|
 
         if selected_module.module_type == 'base'
-          url = selected_module.attributes['url'].first
+          url = @builder_type == :vmware_iso ? selected_module.attributes['esxi_url'].first : selected_module.attributes['url'].first
 
           unless url.nil? || url =~ /^http*/
             Print.std "Checking to see if local basebox #{url.split('/').last} exists"
@@ -92,12 +95,15 @@ class ProjectFilesCreator
                 template_based_file_write(packerfile_path, packerfile_path.split(/.erb$/).first)
                 template_based_file_write(autounattend_path, autounattend_path.split(/.erb$/).first)
                 system "cd '#{packerfile_path.split(/\/[^\/]*.erb$/).first}' && packer build Packerfile && cd '#{ROOT_DIR}'"
+                selected_module.attributes['url'][0] = "#{VAGRANT_BASEBOX_STORAGE}/#{url}"
+                selected_module.attributes['esxi_url'][0] = "#{VAGRANT_BASEBOX_STORAGE}/#{url}"
               else
                 Print.err "Packerfile not found, vagrant error may occur, please check the secgen metadata for the base module #{selected_module.name} for errors";
               end
             else
               Print.std "Vagrant basebox #{url.split('/').last} exists"
               selected_module.attributes['url'][0] = "#{VAGRANT_BASEBOX_STORAGE}/#{url}"
+              selected_module.attributes['esxi_url'][0] = "#{VAGRANT_BASEBOX_STORAGE}/#{url}"
             end
           end
         end
@@ -129,7 +135,7 @@ class ProjectFilesCreator
     end
 
     # Create the marker xml file
-    x2file = "#{@out_dir}/flag_hints.xml"
+    x2file = "#{@out_dir}/#{FLAGS_FILENAME}"
 
     xml_marker_generator = XmlMarkerGenerator.new(@systems, @scenario, @time)
     xml = xml_marker_generator.output
@@ -142,14 +148,14 @@ class ProjectFilesCreator
       Print.err "Error writing file: #{e.message}"
       abort
     end
-    
+
     # Create the CTFd zip file for import
     ctfdfile = "#{@out_dir}/CTFd_importable.zip"
     Print.std "Creating CTFd configuration: #{ctfdfile}"
-    
+
     ctfd_generator = CTFdGenerator.new(@systems, @scenario, @time)
     ctfd_files = ctfd_generator.ctfd_files
-    
+
     # zip up the CTFd export
     begin
       Zip::ZipFile.open(ctfdfile, Zip::ZipFile::CREATE) { |zipfile|
@@ -159,7 +165,7 @@ class ProjectFilesCreator
             f.print ctfd_file_content
           }
         end
-        zipfile.mkdir("uploads")
+        # zipfile.mkdir("uploads")
         # TODO: could add a logo image
         # zipfile.mkdir("uploads/uploads") # empty as in examples
         # zipfile.mkdir("uploads/fca9b07e1f3699e07870b86061815b1c")
@@ -171,8 +177,12 @@ class ProjectFilesCreator
       Print.err "Error writing zip file: #{e.message}"
       abort
     end
-    
-    
+
+    # Copy the test superclass into the project/lib directory
+    Print.std "Copying post-provision testing class"
+    FileUtils.mkdir("#{@out_dir}/lib")
+    FileUtils.cp("#{ROOT_DIR}/lib/objects/post_provision_test.rb", "#{@out_dir}/lib/post_provision_test.rb")
+
     Print.std "VM(s) can be built using 'vagrant up' in #{@out_dir}"
 
   end
@@ -234,6 +244,13 @@ class ProjectFilesCreator
     # Replace the last octet in our split_ip array and return the IP
     split_ip[3] = last_octet.to_s
     split_ip.join('.')
+  end
+
+  # Replace 'network' with 'snoop' where the system name contains snoop
+  def get_ovirt_network_name(system_name, network_name)
+    split_name = network_name.split('-')
+    split_name[1] = 'snoop' if system_name.include? 'snoop'
+    split_name.join('-')
   end
 
 # Returns binding for erb files (access to variables in this classes scope)

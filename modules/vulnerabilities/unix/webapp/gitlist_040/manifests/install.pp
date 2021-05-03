@@ -2,9 +2,7 @@ class gitlist_040::install {
 
   Exec { path => ['/bin', '/usr/bin', '/usr/local/bin', '/sbin', '/usr/sbin'] }
 
-  package { 'git':
-    ensure => installed,
-  }
+  ensure_packages('git')
 
   $archive = 'gitlist-0.4.0.tar.gz'
 
@@ -30,7 +28,7 @@ class gitlist_040::install {
   }
 
   case $operatingsystemrelease {
-    /^9.*/: { # do 9.x stretch stuff
+    /^(9|10).*/: { # do 9.x stretch stuff
 
       file { '/var/www/gitlist/.htaccess':
         require => Exec['unpack-gitlist'],

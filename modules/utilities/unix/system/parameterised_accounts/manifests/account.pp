@@ -1,4 +1,12 @@
-define parameterised_accounts::account($username, $password, $super_user, $strings_to_leak, $leaked_filenames) {
+define parameterised_accounts::account (
+  $username,
+  $password,
+  $groups,
+  $super_user,
+  $strings_to_leak,
+  $leaked_filenames,
+  $data_to_leak = []
+) {
   # ::accounts::user changes permissions on group, passwd, shadow etc. so needs to run before
   if defined('writable_groups::config') {
     include ::writable_groups::config
@@ -20,6 +28,7 @@ define parameterised_accounts::account($username, $password, $super_user, $strin
   # Add user account
   ::accounts::user { $username:
     shell      => '/bin/bash',
+    groups     => $groups,
     password   => pw_hash($password, 'SHA-512', 'mysalt'),
     managehome => true,
     before     => $misconfigurations,
@@ -27,9 +36,9 @@ define parameterised_accounts::account($username, $password, $super_user, $strin
 
   # sort groups if sudo add to conf
   if $super_user {
-    exec { "add-$username-to-sudoers":
-      path    => ['/bin', '/usr/bin', '/usr/local/bin', '/sbin', '/usr/sbin'],
-      command => "echo '$username ALL=(ALL) ALL' >> /etc/sudoers",
+    file_line  { "add-$username-to-sudoers":
+      path => '/etc/sudoers',
+      line => "$username ALL=(ALL) ALL",
     }
   }
 
@@ -43,9 +52,22 @@ define parameterised_accounts::account($username, $password, $super_user, $strin
   # Leak strings in a text file in the users home directory
   ::secgen_functions::leak_files { "$username-file-leak":
     storage_directory => "/home/$username/",
-    leaked_filenames  => $leaked_filenames,
     strings_to_leak   => $strings_to_leak,
+    leaked_filenames  => $leaked_filenames,
     owner             => $username,
+    group             => $username,
+    mode              => '0600',
     leaked_from       => "accounts_$username",
+  }
+
+  unless $data_to_leak == undef or $data_to_leak == [] or $data_to_leak == [''] {
+    ::secgen_functions::leak_data { "$username-data-leak":
+      storage_directory => "/home/$username/",
+      data_to_leak      => $data_to_leak,
+      owner             => $username,
+      group             => $username,
+      mode              => '0600',
+      leaked_from       => "accounts_$username",
+    }
   }
 }

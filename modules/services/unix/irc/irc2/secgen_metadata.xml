@@ -20,7 +20,8 @@
     <type>ircd</type>
   </conflict>
   <conflict>
-    <name>.*Stretch.*</name>
+    <!-- install stalls and times out on Stretch -->
+    <name>.*Debian.*Stretch.*</name>
   </conflict>
   <requires>
     <type>update</type>

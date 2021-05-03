@@ -53,7 +53,7 @@ DROP TABLE IF EXISTS `orders`;
 CREATE TABLE `orders` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
-  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `cc` varchar(16) DEFAULT NULL,
   `cvv` varchar(3) DEFAULT NULL,
   `expire` date DEFAULT NULL,
@@ -139,7 +139,7 @@ INSERT INTO `products` VALUES
   (8,'BlackHole Crimeware','/img/uploads/2015-01-05_lPh78V.jpg','Start a bot, maintain and control it. Your own crimewave.','800.00',1),
   (9,'DDOS your enemies','/img/uploads/2015-01-05_qHt6s3.jpg','We use ZeuS to DDOS a target server of your choice.','100.00',1),
   (10,'Web hacking','/img/uploads/2015-01-05_btQvWF.jpg','Give us a URL and you have an hour of our work to bring down a site of your choice.','50.00',1),
-  (11,'My Little Pony','/img/uploads/2015-01-05_f7rk0d.jpg','022f844f138df4cd87af0d89189d8f57','999999.00',1);
+  (11,'My Little Pony','/img/uploads/2015-01-05_f7rk0d.jpg','<%= @pony_products_flag -%>','999999.00',1);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -151,7 +151,7 @@ DROP TABLE IF EXISTS `token`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `token` (
-  `token` varchar(256) DEFAULT NULL
+  `token` text DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -161,7 +161,7 @@ CREATE TABLE `token` (
 
 LOCK TABLES `token` WRITE;
 /*!40000 ALTER TABLE `token` DISABLE KEYS */;
-INSERT INTO `token` VALUES ('f46659047894a919ab5f43c3338811e6');
+INSERT INTO token VALUES ('<%= @db_flag -%>');
 /*!40000 ALTER TABLE `token` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -179,7 +179,7 @@ CREATE TABLE `users` (
   `password` varchar(128) DEFAULT NULL,
   `is_dealer` tinyint(1) DEFAULT '0',
   `email` varchar(128) DEFAULT NULL,
-  `killed_on` timestamp NULL DEFAULT NULL,
+  `killed_on` datetime NULL DEFAULT NULL,
   `killed_by` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
@@ -199,7 +199,7 @@ INSERT INTO `users` VALUES
 <% position = (counter + 1).to_s
    account = JSON.parse(json_account)
    is_dealer = @dealer_id == position ? '1' : '0'
-   killed_on_date = @murdered_ids.include?(position) ? @murdered_on.shift : 'NULL'
+   killed_on_date = @murdered_ids.index(position) ? @murdered_on[@murdered_ids.index(position)] : 'NULL'
    killed_by = @murdered_ids.include?(position) ? @murderer_id : 'NULL'
    line_end = position == @accounts.size.to_s ? ';' : ',' -%>
   <%="(#{counter+1},'#{account['username']}','#{account['name']}','#{account['password']}',#{is_dealer},'#{account['username']}@#{@domain}','#{killed_on_date}',#{killed_by})#{line_end}" %>

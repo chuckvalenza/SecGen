@@ -52,6 +52,7 @@ class moinmoin_195::config {
     storage_directory => "/usr/local/share/moin/data/pages/$default_page/attachments",
     images_to_leak => $images_to_leak,
     leaked_from => "moinmoin_195",
+    owner => "www-data"
   }
 
 
@@ -62,4 +63,6 @@ class moinmoin_195::config {
     /bin/chmod -R o-rwx /usr/local/share/moin',
     notify => Service['apache2'],
   }
+
+  ensure_resource('tidy','moinmoin remove default site', {'path'=>'/etc/apache2/sites-enabled/000-default.conf'})
 }

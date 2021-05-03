@@ -15,9 +15,11 @@
   <privilege>root_rwx</privilege>
   <access>remote</access>
   <platform>linux</platform>
+  <difficulty>low</difficulty>
 
   <read_fact>server_name</read_fact>
   <read_fact>strings_to_leak</read_fact>
+  <read_fact>leaked_filenames</read_fact>
   <read_fact>welcome_msg</read_fact>
   <read_fact>port</read_fact>
 
@@ -34,15 +36,17 @@
 
   <default_input into="strings_to_leak">
     <generator type="message_generator"/>
-    <generator type="message_generator"/>
   </default_input>
+  <default_input into="leaked_filenames">
+    <generator type="filename_generator"/>
+  </default_input>
+
 
   <default_input into="welcome_msg">
     <generator type="message_generator"/>
   </default_input>
 
   <!--optional vulnerability details-->
-  <difficulty>low</difficulty>
   <!--<cve></cve>-->
   <cvss_base_score>10</cvss_base_score>
   <cvss_vector>AV:N/AC:L/Au:N/C:C/I:C/A:C</cvss_vector>
@@ -59,6 +63,11 @@
   <conflict>
     <software_name>proftpd</software_name>
   </conflict>
+  <!--Cannot co-exist with other ftp servers (default to same ports)-->
+  <conflict>
+    <type>$ftp^</software_name>
+  </conflict>
+
 
   <requires>
     <type>update</type>

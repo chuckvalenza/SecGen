@@ -13,10 +13,15 @@
   <platform>windows</platform>
   <distro>Windows 2008 r2</distro>
   <url>windows_2008_64_virtualbox.box</url> <!-- Check for this basebox first -->
+  <esxi_url>windows_2008_64_vmware_esxi.box</esxi_url>
 
   <packerfile_path>windows_server_2008_r2_amd64/Packerfile.erb</packerfile_path> <!-- If basebox not found build new basebox via packerfile at path -->
 
   <reference></reference>
   <software_license>various</software_license>
 
+  <!-- another base should not be added to this base -->
+  <conflict>
+    <module_path>bases/.*</module_path>
+  </conflict>
 </base>

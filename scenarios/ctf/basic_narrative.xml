@@ -6,7 +6,7 @@
 
   <name>Basic Narrative</name>
   <author>Thomas Shaw</author>
-  <description>Single system narrative-based CTF challenge.
+  <description>Single system CLI narrative-based CTF challenge.
   </description>
 
   <type>ctf</type>
@@ -15,8 +15,13 @@
   <difficulty>intermediate</difficulty>
 
   <system>
-    <system_name>system</system_name>
-    <base platform="linux" type="server"/>
+    <system_name>target_server</system_name>
+    <base distro="Debian 9" platform="linux" type="server"/>
+
+    <input into_datastore="IP_addresses">
+      <value>172.10.0.2</value>
+      <value>172.10.0.3</value>
+    </input>
 
     <input into_datastore="accounts">
       <!-- [0]: Entry account -->
@@ -210,13 +215,13 @@
 
 
     <!-- Scenario Modules -->
-    <utility module_path=".*parameterised_accounts">
+    <utility module_path=".*/parameterised_accounts">
       <input into="accounts">
         <datastore access="0">accounts</datastore>
       </input>
     </utility>
 
-    <vulnerability module_path=".*hidden_file">
+    <vulnerability module_path=".*/hidden_file">
       <input into="account">
         <datastore access="0">accounts</datastore>
       </input>
@@ -226,13 +231,16 @@
       </input>
     </vulnerability>
 
-    <vulnerability module_path=".*passwordless_user_account.*">
+    <vulnerability module_path=".*/passwordless_user_account.*">
       <input into="accounts">
         <datastore access="1">accounts</datastore>
       </input>
     </vulnerability>
 
     <service name="Random Parameterised Website">
+      <input into="theme">
+        <value>journal.min.css</value>
+      </input>
       <input into="main_page_paragraph_content">
         <generator type="html_snippet_generator">
           <input into="heading">
@@ -300,7 +308,7 @@
       </input>
     </service>
 
-    <utility module_path=".*system/mail.*">
+    <utility module_path=".*/system/mail.*">
       <input into="mail">
         <generator type="mail_message">
           <input into="sender_user">
@@ -399,13 +407,13 @@
     </utility>
 
     <!-- Account 3 vulnerability-->
-    <vulnerability module_path=".*ssh_leaked_keys">
+    <vulnerability module_path=".*/ssh_leaked_keys">
       <input into="accounts">
         <datastore access="2">accounts</datastore>
       </input>
     </vulnerability>
 
-    <vulnerability module_path=".*onlinestore.*">
+    <vulnerability module_path=".*/onlinestore.*">
       <input into="port">
         <value>1337</value>
       </input>
@@ -429,14 +437,41 @@
       </input>
     </vulnerability>
 
-    <utility module_path=".*sqlmap.*"/>
+    <network type="private_network">
+      <input into="IP_address">
+        <datastore access="0">IP_addresses</datastore>
+      </input>
+    </network>
 
-    <network module_path=".*private_network_1"/>
     <build type="cleanup">
       <input into="root_password">
         <generator type="strong_password_generator"/>
       </input>
     </build>
+  </system>
+
+  <system>
+    <system_name>attack_vm</system_name>
+    <base distro="Kali" name="MSF"/>
+
+    <utility module_path=".*/iceweasel">
+      <input into="accounts">
+        <value>{"username":"root","password":"toor","super_user":"","strings_to_leak":[],"leaked_filenames":[]}</value>
+      </input>
+      <input into="autostart">
+        <value>true</value>
+      </input>
+      <input into="start_page">
+        <datastore access="0">IP_addresses</datastore>
+      </input>
+    </utility>
+
+    <utility module_path=".*/kali_top10"/>
+    <network type="private_network">
+      <input into="IP_address">
+        <datastore access="1">IP_addresses</datastore>
+      </input>
+    </network>
   </system>
 
 </scenario>

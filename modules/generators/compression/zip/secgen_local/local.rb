@@ -14,10 +14,11 @@ class ZipGenerator < StringEncoder
     self.file_name = ''
     self.strings_to_leak = []
     self.password = ''
+    Dir.mkdir '../tmp/' unless Dir.exists? '../tmp/'
   end
 
   def encode_all
-    zip_file_path = GENERATORS_DIR + 'compression/zip/secgen_local/archive.zip'
+    zip_file_path = GENERATORS_DIR + 'compression/zip/tmp/archive.zip'
     file_contents = ''
     data = self.strings_to_leak.join("\n")
 
@@ -32,9 +33,9 @@ class ZipGenerator < StringEncoder
         zip_file.get_output_stream(self.file_name) { |os|
           os.write data
         }
-        file_contents = File.binread(zip_file_path)
-        FileUtils.rm(zip_file_path)
       end
+      file_contents = File.binread(zip_file_path)
+      FileUtils.rm(zip_file_path)
     end
     self.outputs << Base64.strict_encode64(file_contents)
   end

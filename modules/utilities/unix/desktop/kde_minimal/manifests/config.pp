@@ -5,6 +5,14 @@ class kde_minimal::config {
   $autostart_konsole = str2bool($secgen_params['autostart_konsole'][0])
 
   case $operatingsystemrelease {
+    /^10.*/: { # do 10.x buster stuff
+      if $autologin_user != "false" {
+        file { "/etc/sddm.conf":
+          ensure  => file,
+          content => template('kde_minimal/minimal-sddm.conf.erb'),
+        }
+      }
+    }
     /^9.*/: { # do 9.x stretch stuff
       if $autologin_user != "false" {
         file { "/etc/sddm.conf":
@@ -28,12 +36,18 @@ class kde_minimal::config {
       $account = parsejson($raw_account)
       $username = $account['username']
 
+      file { ["/home/$username/", "/home/$username/.config/"]:
+        ensure => directory,
+        owner  => $username,
+        group  => $username,
+      }
       # autostart konsole
       if $autostart_konsole {
-        file { ["/home/$username/", "/home/$username/.config/", "/home/$username/.config/autostart/"]:
+        file { "/home/$username/.config/autostart/":
           ensure => directory,
           owner  => $username,
           group  => $username,
+          require => File["/home/$username/.config/"],
         } ~>
         file { "/home/$username/.config/autostart/org.kde.konsole.desktop":
           ensure => file,
@@ -43,13 +57,13 @@ class kde_minimal::config {
         }
       }
 
-      if $operatingsystemrelease =~ /^9.*/ { # Disable stretch auto screen lock
+      if $operatingsystemrelease =~ /^(9|10).*/ { # Disable stretch auto screen lock
         file { "/home/$username/.config/kscreenlockerrc":
           ensure  => file,
           source  => 'puppet:///modules/kde_minimal/kscreenlockerrc',
           owner   => $username,
           group   => $username,
-          require => File["/home/$username/"],
+          require => File["/home/$username/.config/"],
         }
       }
     }

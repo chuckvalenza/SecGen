@@ -14,9 +14,11 @@
 
   <type>webapp</type>
   <type>in_the_wild</type>
+  <type>webapp_with_db</type>
   <privilege>user_rwx</privilege>
   <access>remote</access>
   <platform>linux</platform>
+  <difficulty>medium</difficulty>
 
   <read_fact>port</read_fact>
   <read_fact>strings_to_leak</read_fact>
@@ -31,6 +33,7 @@
     <value>80</value>
   </default_input>
 
+  <!-- TODO: should strings_to_leak be hidden away on the server, so the exploit needs exploiting before getting to the files, at the moment browsing to the website reveals the files -->
   <default_input into="strings_to_leak">
     <value>This is some leaked data.</value>
     <generator type="message_generator"/>
@@ -49,7 +52,6 @@
   </default_input>
 
   <!--optional vulnerability details-->
-  <difficulty>medium</difficulty>
   <cve>CVE-2012-6080</cve>
   <cve>CVE-2012-6081</cve>
 
@@ -67,6 +69,11 @@
     Remote code execution possible in twikidraw and anywikidraw modules.
     Path traversal found in AttachFile module.
   </solution>
+
+  <!-- can't live alongside other web sites, since they it accepts any virtual host name -->
+  <conflict>
+    <type>webapp</type>
+  </conflict>
 
   <conflict>
     <name>.*Stretch.*</name>
